@@ -25,7 +25,6 @@ namespace Users.API.Controllers
 
         // GET: api/Statuses
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             try

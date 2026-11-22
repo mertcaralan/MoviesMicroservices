@@ -1,5 +1,6 @@
 #nullable disable
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using CORE.Models;
@@ -10,6 +11,7 @@ namespace Movies.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MoviesController : ControllerBase
     {
         private readonly ILogger<MoviesController> _logger;
@@ -23,6 +25,7 @@ namespace Movies.API.Controllers
 
         // GET: api/Movies
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             try
@@ -61,6 +64,7 @@ namespace Movies.API.Controllers
 
 		// POST: api/Movies
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post(MovieAddRequest request)
         {
             try
@@ -85,6 +89,7 @@ namespace Movies.API.Controllers
 
         //// PUT: api/Movies
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(MovieUpdateRequest request)
         {
             try
@@ -109,6 +114,7 @@ namespace Movies.API.Controllers
 
         // DELETE: api/Movies/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

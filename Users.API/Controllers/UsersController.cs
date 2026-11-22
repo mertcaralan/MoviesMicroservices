@@ -93,7 +93,7 @@ namespace Users.API.Controllers
 
         // PUT: api/Users
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(UserUpdateRequest request)
         {
             try
@@ -123,7 +123,7 @@ namespace Users.API.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

@@ -1,5 +1,6 @@
 #nullable disable
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using CORE.Models;
@@ -10,6 +11,7 @@ namespace Movies.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DirectorsController : ControllerBase
     {
         private readonly ILogger<DirectorsController> _logger;
@@ -61,6 +63,7 @@ namespace Movies.API.Controllers
 
 		// POST: api/Directors
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post(DirectorAddRequest request)
         {
             try
@@ -85,6 +88,7 @@ namespace Movies.API.Controllers
 
         //// PUT: api/Directors
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(DirectorUpdateRequest request)
         {
             try
@@ -109,6 +113,7 @@ namespace Movies.API.Controllers
 
         // DELETE: api/Directors/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

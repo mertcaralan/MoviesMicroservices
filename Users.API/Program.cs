@@ -2,6 +2,7 @@ using CORE.Authentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Users.APP.Domain;
 
@@ -32,13 +33,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter your JWT as: Bearer jwt"
+        });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<UsersDb>();
+        db.Database.Migrate();
+        if (!db.Users.Any())
+            new UsersDbFactory().SeedDb(db);
+    }
     app.UseSwagger();
     app.UseSwaggerUI();
 }

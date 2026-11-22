@@ -18,6 +18,11 @@ namespace Users.APP.Domain
         public void SeedDb()
         {
             using var db = CreateDbContext(null);
+            SeedDb(db);
+        }
+
+        public void SeedDb(UsersDb db)
+        {
             using var transaction = db.Database.BeginTransaction();
 
             var userRoles = db.UserRoles.ToList();
