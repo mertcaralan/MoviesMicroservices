@@ -58,5 +58,74 @@ namespace Movies.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new CommandResponse(false, "An exception occured during MoviesGetById."));
             }
         }
+
+		// POST: api/Movies
+        [HttpPost]
+        public async Task<IActionResult> Post(MovieAddRequest request)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var response = await _mediator.Send(request);
+                    if (response.IsSuccessful)
+                    {
+                        return Ok(response);
+                    }
+                    ModelState.AddModelError("MoviesPost", response.Message);
+                }
+                return BadRequest(new CommandResponse(false, string.Join("|", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))));
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("MoviesPost Exception: " + exception.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new CommandResponse(false, "An exception occured during MoviesPost."));
+            }
+        }
+
+        //// PUT: api/Movies
+        [HttpPut]
+        public async Task<IActionResult> Put(MovieUpdateRequest request)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var response = await _mediator.Send(request);
+                    if (response.IsSuccessful)
+                    {
+                        return Ok(response);
+                    }
+                    ModelState.AddModelError("MoviesPut", response.Message);
+                }
+                return BadRequest(new CommandResponse(false, string.Join("|", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))));
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("MoviesPut Exception: " + exception.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new CommandResponse(false, "An exception occured during MoviesPut."));
+            }
+        }
+
+        // DELETE: api/Movies/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var response = await _mediator.Send(new MovieRemoveRequest() { Id = id });
+                if (response.IsSuccessful)
+                {
+                    return Ok(response);
+                }
+                ModelState.AddModelError("MoviesDelete", response.Message);
+                return BadRequest(new CommandResponse(false, string.Join("|", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))));
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("MoviesDelete Exception: " + exception.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new CommandResponse(false, "An exception occured during MoviesDelete."));
+            }
+        }
     }
 }
